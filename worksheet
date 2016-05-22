@@ -1,0 +1,48 @@
+Extremes in R Lab – Friday 24 July
+1 Stationary Block Maxima
+1. Load the dataset of Fort Collins precipitation observations, Fort, from the extRemes Library. Create a data frame of the annual maximum daily precipitation and assign this to a new data frame. The result should be a data frame with the annual maximum precipitation in the "Prec" column along with the position during each year where the maximum occurred. (Hint: Use data and blockmaxxer).
+2. Fit a GEV distribution to the data created in 1 above. (Hint: use fevd)
+3. Plot the QQ-Plot for the fit from 2 above. Do the assumptions for fitting the GEV distribution appear to be reasonable?
+4. Estimate the 95% confidence intervals using the profile likelihood method for the shape parameter found from the fit in 2 above (Hint: use the arguments which.par=3). Note that is also a good idea to look at the profile likelihood plot (obtained with profliker) to make sure the bounds are valid. It may be necessary to use the xrange argument in order to get a more readable plot. The function will try to find a decent xrange by default, but will often fail, so good bounds may need to be estimated by the user. Is this parameter significantly different from zero at the 5% significance level?
+
+5. Read in the Boulder observation data that you saved yesterday as smalldata.txt.
+6. Make a line plot of the maximum temperature against year for these data, check whether there is a significant trend in the data. (Hint: use type = "l" in the plot call and check the lm fit).
+7. Fit the GEV to the maximum temperature field.
+8. Make a QQ-Plot for this fit. Do the assumptions for using the GEV appear reasonable for these data?
+9. Estimate 95% CI’s for the shape parameter. What can you say about the tail behavior of maximum temperature for Boulder based on the fit to these data?
+10. Now analyze the minimum temperature series and answer the same questions.
+
+2 Stationary Peaks Over Threshold
+11. Fit the GP distribution to a range of thresholds for the Fort data set loaded in 1 above, and select a threshold for fitting the GP distribution to these data. Does 0.395 inches appear to be a reasonable choice for a threshold? (Hint: also consider using threshrange.plot or mrlplot)
+12. Plot precipitation against obs, and add a red horizontal dashed line at 0.395 (Hint: use abline with argument h = 0.395). Do the data appear to be independent over the threshold?
+13. Compare the fits of the GP and GEV distribution to the Fort Collins, Colorado precipitation data. Plot diagnostics for the resulting fits (i.e., use plot). How do the results compare?
+14. Estimate a 95% CI for the shape parameter from both fits. Is the shape parameter significantly different from zero at the 5% level for either fit? What can you say about the results for the two fits? Which do you think is more reliable? Do you believe either one?
+15. Estimate the extremal index using a threshold of 0.395 inches for the original precipitation field from Fort. Are the excesses independent? Decluster the excesses using the decluster function with a run length suggested from the call to extremalindex. Plot the results.
+16. Re-fit the GP distribution to the newly de-clustered field. Is this fit any different from the previous ones? How does the shape parameter compare with the GEV distribution fit to the annual maxima, relative to the previous GP fit to the non-declustered excesses?
+17. Estimate the Poisson rate parameter associated with a threshold of 0.395 inches for the (physically) de-clustered precipitation data (Hint: remember to use >0.395 in the call to fpois or mean).
+18. Fit a PP model to the (physically) declustered precipitation data.
+19. Find the Poisson rate parameter from the PP model fit above. Is it nearly the same as the estimate obtained above? (Hint: use the relation  ).
+
+3 Linear Temporal Trends
+20. Load the Denmint data set.  Create a new column of the negative of the minimum temperature, call it negMin, then use blockmaxxer to obtain the annual maximum of the negative of the minimum temperature.
+21. Plot the annual maximum negMin against year. Does there appear to be any temporal trend in these data?
+22. Fit a linear regression of year against negative minimum temperature (Hint: See the help file for lm). Is there a significant linear trend in these data (Hint: use the summary function on the lm fitted object)?
+23. Fit the GEV distribution to the annual maximum negative minimum temperature (without any trend).
+24. Plot the diagnostics for this fit. Do the model assumptions appear to be reasonable?
+25. Estimate a 95% CI for the shape parameter.
+26. Interpret the return level plot for a gas/power company wanting to understand the risk of too much demand for gas in Denver in any given year (Hint: remember the return levels are for the negative of minimum temperature).
+27. Fit the GEV to the negative minimum temperature data with a linear trend in the location parameter for t = 1, 2, . . . (i.e., use the Time column).
+28. Plot the diagnostics for this fit. Do the assumptions for the model fit appear to be reasonable?
+29. Perform a likelihood ratio test for  on this fit. Is inclusion of the linear trend statistically significant?
+30. Try fitting the GEV to the negative minimum temperature data with a linear trend in both the location and the scale parameters (using use.phi = TRUE), and check the diagnostic plots. Is this a reasonable model? Perform a likelihood-ratio test of this model against the previous fit with a trend. Is it statistically significant to include a trend in the scale parameter? What happens if the test is performed against the model with no trends?
+
+4 Cyclic Variation
+31. The GP distribution was fit to Fort Collins precipitation excesses, and declus- tered versions of these data, in the threshold excess practice above. Now, let’s fit the Poisson rate parameter including an annual cycle using the glm function. This can be accomplished in the following way.
+Fort$PrecGTu <- Fort$Prec > 0.395
+fit <- glm(PrecGTu ~ sin(2 * pi * tobs / 365.25) + cos(2 * pi * tobs / 365.25), data = Fort, family = poisson()
+Is there a significant (at the 5% level) annual cycle in the Poisson rate parameter? Note that the model fit above is  , where .
+32. Re-fit the PP model to the precipitation data with no parameter covariates and threshold of 0.395 inches, if you do not still have it.
+33. Fit the PP model to the Fort Collins, Colorado precipitation data with a threshold of 0.395 inches, and with a cyclic variation in the location parameter as for .
+34. Perform a likelihood ratio test for  in the above model. Is the fit significant? Are the model assumptions reasonable?
+35. Try fitting the point process model with a cyclic trend in the scale parameter (i.e. ). Is the trend significant? Are the model assumptions reasonable?
+36. Given the results here, and the results from declustering previously, which approach would you recommend for these data?

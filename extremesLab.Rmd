@@ -1,0 +1,87 @@
+---
+title: "Extremes Lab"
+author: "Andrew Yip"
+date: "07/24/2015"
+output: html_document
+---
+
+```{r setup}
+library(extRemes)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+data("Fort")
+```
+
+# 1. Stationary Block Maxima
+
+```{r SBM-FortCollins}
+# load the df
+## extRemes way
+df <- blockmaxxer(Fort, blocks = Fort$year, which = "Prec")
+
+## dplyr way
+# df <- left_join(Fort %>% group_by(year) %>% summarize(obs = obs[which.max(Prec)]), Fort)
+
+# fit GEV
+prec.gev <- fevd(Prec, data = df)
+
+# qqplot
+plot(prec.gev, "qq")
+
+# 0.95 CI
+ci(prec.gev, type = "parameter")
+profliker(prec.gev, type = "parameter", which.par = 3, xrange = c(-0.1, 0.3))
+```
+
+```{r SMB-BoulderMax}
+# read smalldata
+boulder <- read.csv("smalldata.txt", sep = "\t", stringsAsFactors = F)
+
+# line plot
+boulder$year <- year(ymd(boulder$date))
+bMax <- blockmaxxer(boulder, blocks = boulder$year, which = "TxC")
+
+bMax %>% ggplot(aes(x = year, y = TxC)) + geom_line() + geom_smooth(method = "lm")
+
+# fit gev
+txc.gev <- fevd(TxC, data = bMax %>% na.omit)
+plot(txc.gev, "qq")
+
+# ci 0.95
+ci(txc.gev, type = "parameter")
+```
+
+```{r SBM-BoulderMin}
+# q10
+bMin <- blockmaxxer(boulder, blocks = boulder$year, which = "TnC")
+
+bMin %>% ggplot(aes(x = year, y = TnC)) + geom_line() + geom_smooth(method = "lm")
+
+# fit gev
+tnc.gev <- fevd(TnC, data = bMin %>% na.omit)
+plot(tnc.gev, "qq")
+
+# ci 0.95
+ci(tnc.gev, type = "parameter")
+```
+
+# 2. Stationary Peaks over Threshold
+
+```{r Fort-pot}
+# examine quantiles
+quantile(Fort$Prec, seq(0.95, 1, 0.01))
+
+# q11
+threshrange.plot(Fort$Prec, c(0.3, 0.8), type = "GP")
+mrlplot(Fort$Prec)
+
+fort_pot <- fevd(Prec, Fort, 0.395, type = "GP")
+
+# q12
+Fort %>% ggplot(aes(x = obs, y = Prec)) + geom_point() + geom_hline(yintercept = 0.395, color = "red")
+
+# q13
+
+```
