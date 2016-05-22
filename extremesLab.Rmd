@@ -83,5 +83,9 @@ fort_pot <- fevd(Prec, Fort, 0.395, type = "GP")
 Fort %>% ggplot(aes(x = obs, y = Prec)) + geom_point() + geom_hline(yintercept = 0.395, color = "red")
 
 # q13
+plot(prec.gev)
+plot(fort_pot)
+
+# q14
 
 ```
